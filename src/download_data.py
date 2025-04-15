@@ -9,6 +9,17 @@ import time
 BASE_URL = "https://www.ecfr.gov/"
 TITLES_LIST_URL = f"{BASE_URL}/api/versioner/v1/titles"
 
+
+def get_titles_list(url=TITLES_LIST_URL):
+    """
+    Get the list of titles from the ECFR API
+    """
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise Exception(f"Failed to get titles list: {response.status_code}")
+    return response.json()
+
+
 if __name__ == "__main__":
     # Find the root of the git repository
     git_root = Path(os.popen("git rev-parse --show-toplevel").read().strip())
@@ -17,7 +28,7 @@ if __name__ == "__main__":
     print(f"Data will be saved to { data_dir }")
 
     # list all titles
-    tl = requests.get(TITLES_LIST_URL)
+    tl = get_titles_list()
     tlj = tl.json()
     titles = tlj["titles"]
 

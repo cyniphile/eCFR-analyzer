@@ -1,19 +1,9 @@
 # eCFR-analyzer
 
-## Next steps
-
-Read these
-- https://www.ecfr.gov/reader-aids/using-ecfr/reading-ecfr-content
-- https://www.ecfr.gov/reader-aids/using-ecfr/ecfr-changes-through-time
-- how does title correlate to agency?
-- still need to figure this part of api out?
-
-## Project Overview
-The eCFR is available at https://www.ecfr.gov/.  There is a public api for it.
 - https://www.ecfr.gov/developers/documentation/api/v1#/
     - In order to create the point-in-time features of the eCFR we process these XML files into smaller units that we then track over time. Our APIs provide access to these various transformations and generated metadata as well as historical search.
 
-- Please write code to download the current eCFR
+- Structure 
 	- title
     	- Chapter
     		- Subchapter
@@ -21,7 +11,6 @@ The eCFR is available at https://www.ecfr.gov/.  There is a public api for it.
 					- subpart
 						- Section
 							- Subsection
-- Analyze it for items such as
 	- word count per agency
 	- historical changes over time. 
 	- Feel free to add your own custom metrics.
