@@ -1,0 +1,1 @@
+- Took ~1.5 hours to do basic project setup, familiarization with the CFR, the eCFR api, and download all the complete part files. Took ~30min to download the raw data
