@@ -1,9 +1,13 @@
 ## Next steps
-Read these
-- https://www.ecfr.gov/reader-aids/using-ecfr/reading-ecfr-content
-- https://www.ecfr.gov/reader-aids/using-ecfr/ecfr-changes-through-time
+<!-- Read these -->
+<!-- - https://www.ecfr.gov/reader-aids/using-ecfr/reading-ecfr-content -->
+<!-- - https://www.ecfr.gov/reader-aids/using-ecfr/ecfr-changes-through-time -->
 - how does title correlate to agency?
+  - https://www.ecfr.gov/developers/documentation/api/v1#/Admin%20Service/get_api_admin_v1_agencies_json
 - still need to figure out changes api
+  - understand results better: https://www.ecfr.gov/developers/documentation/api/v1#/Versioner%20Service/get_api_versioner_v1_versions_title__title__json
+  - https://github.com/usgpo/bulk-data/blob/main/ECFR-XML-User-Guide.md
+- What to do for frontend + hosting? Panel would make most sense since I've used it.
 
 
 
@@ -14,6 +18,7 @@ Read these
   - Departments with tons of words in the CFR are probably not doing a good job of communicating their rules and regulations. (But some departments are more complicated by nature...a good way to "normalize" raw word count??)
   - Departments with tons of changes might "problem children" for variety of reasons: political issues, congressional meddling (or incompetence in how the dept writes the cfr)
   - TODO: brainstorm more deeply how use this data for efficiency analysis
+- Spent .5 hours over lunch to dig into the historical changes. Get a list of changes for a given title is pretty easy, but TODO: should think of a clear way of showing changes over time, and how to visualize by which sections/parts/etc are changing. Could imagine something like a heatmap (similar to disk utility) where you can sort and filter sections by changes over time, see a timeseries, etc. 
 
 ## Day 1
 - As I was falling asleep thought of some things:

@@ -20,11 +20,15 @@ def get_titles_list(url=TITLES_LIST_URL):
     return response.json()
 
 
+def get_project_root() -> Path:
+    return Path(os.popen("git rev-parse --show-toplevel").read().strip())
+
+
 if __name__ == "__main__":
     # Find the root of the git repository
-    git_root = Path(os.popen("git rev-parse --show-toplevel").read().strip())
     # Find the ./data directory relative to the root of the git repo
-    data_dir = git_root / "data/raw_part_xml"
+    git_root = get_project_root()
+    data_dir = git_root / "data/raw_title_xml"
     print(f"Data will be saved to { data_dir }")
 
     # list all titles
@@ -43,6 +47,6 @@ if __name__ == "__main__":
         start_time = time.time()
         response = requests.get(title_url)
         print(f"Downloaded title {title_number} in {time.time() - start_time:.2f} seconds")
-        # TODO: add encode date metadata somewhere
+        # TODO: encode date metadata somewhere, so different versions can be downloaded
         with open(f"{data_dir}/title_{title_number}.xml", "wb") as f:
             f.write(response.content)
