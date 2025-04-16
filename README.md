@@ -1,4 +1,6 @@
 # eCFR-analyzer
+example project: https://github.com/sam-berry/ecfr-analyzer?tab=readme-ov-file
+doge example: https://doge.gov/regulations
 
 - https://www.ecfr.gov/developers/documentation/api/v1#/
     - In order to create the point-in-time features of the eCFR we process these XML files into smaller units that we then track over time. Our APIs provide access to these various transformations and generated metadata as well as historical search.
@@ -19,4 +21,4 @@
 - Link to frontend 
 
 We advise you to spend no more than 24 hours on this assignment.
-21hrs left
+20hrs left as of 4/16/2025 4pm est

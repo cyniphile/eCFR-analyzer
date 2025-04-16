@@ -9,6 +9,13 @@
   - https://github.com/usgpo/bulk-data/blob/main/ECFR-XML-User-Guide.md
 - What to do for frontend + hosting? Panel would make most sense since I've used it.
 
+# Day 3
+- Way too busy with interviews and main work to do much, but today have more time
+  - Goal is to finish word counting + figure out changes api. Stretch goal is to design/build local version of website, with plan for deployment.
+- Some text analysis would be nice to do, and I think looking at historical changes will be slightly easier as a POC than looking at all text
+- Awesome goal would be to visualize partisan drift over time by section, but that requires diffs which might be a little tricky
+- Again refocus on an MVP: word counts by agency, and historical changes over time, served in an app
+
 
 
 ## Day 2
