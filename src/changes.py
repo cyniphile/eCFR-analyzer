@@ -7,18 +7,17 @@ import json
 import os
 from download_versions import RAW_VERSIONS_PATH
 
+# TODO: seems like changes before this are not properly recorded in the eCFR
+MIN_DATE = datetime(2017, 1, 3)
+
 
 def page2():
-    st.write("This is the filter page")
-
-    st.title("📊 Title Changes Analyzer")
-    st.markdown("Select options to visualize changes in title content over time.")
+    st.markdown(
+        "Select options to visualize changes in title content over time. In the table below, click on the Links to see the actual changes to the text."
+    )
 
     # Sidebar for controls
     st.sidebar.header("📋 Controls")
-
-    # TODO: seems like changes before this are not properly recorded in the eCFR
-    MIN_DATE = datetime(2017, 1, 3)
 
     def find_title_files():
         title_files = []
@@ -43,17 +42,20 @@ def page2():
                 title_number=title,
                 section_number=row["identifier"],
             )
+        today = (datetime.strptime(date, "%Y-%m-%d") - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
         if subpart:
-            return "https://www.ecfr.gov/compare/{date}/to/2024-05-14/title-{title}/part-{part}/subpart-{subpart}/section-{section}".format(
+            return "https://www.ecfr.gov/compare/{date}/to/{today}/title-{title}/part-{part}/subpart-{subpart}/section-{section}".format(
                 title=title,
+                today=today,
                 part=row["part"],
                 date=date,
                 subpart=subpart,
                 section=row["identifier"],
             )
         else:
-            return "https://www.ecfr.gov/compare/{date}/to/2024-05-14/title-{title}/part-{part}/section-{section}".format(
+            return "https://www.ecfr.gov/compare/{date}/to/{today}/title-{title}/part-{part}/section-{section}".format(
                 removed=removed,
+                today=today,
                 title=title,
                 date=date,
                 part=row["part"],
@@ -132,15 +134,13 @@ def page2():
 
             changes_df = filtered_df.groupby(["Period", "title"]).size().reset_index(name="Changes")
 
-            st.subheader(f"Changes Over Time")
-
             fig = px.line(
                 changes_df,
                 x="Period",
                 y="Changes",
                 color="title",
                 markers=True,
-                title=f"Changes Over Time Grouped by {selected_aggregation}s. In the table below, click on the link to see the changes.",
+                title=f"Changes Over Time Grouped by {selected_aggregation}s.",
             )
 
             fig.update_layout(
@@ -167,10 +167,21 @@ def page2():
                 st.metric("Date Range", f"{start_date} to {end_date}")
 
             st.dataframe(
-                filtered_df,
+                filtered_df.drop(
+                    columns=[
+                        "Period",
+                        "issue_date",
+                        "identifier",
+                        "amendment_date",
+                        "part",
+                        "subpart",
+                        "type",
+                    ]
+                ),
                 column_config={
                     "link": st.column_config.LinkColumn(),
                 },
+                hide_index=True,
             )
 
         else:

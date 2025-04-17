@@ -19,9 +19,9 @@ def page4():
 
 pages = [
     st.Page(page1, icon=":material/home:", title="Home"),
-    st.Page(page2, icon=":material/filter:", title="Filter"),
+    st.Page(page2, icon="📊", title="Title Changes"),
     st.Page(page3, icon=":material/settings:", title="Settings"),
-    st.Page(page4, icon=":material/map:", title="Map"),
+    # st.Page(page4, icon=":material/map:", title="Map"),
 ]
 current_page = st.navigation(pages=pages, position="hidden")
 
@@ -30,7 +30,7 @@ num_cols = max(len(pages) + 1, 8)
 
 columns = st.columns(num_cols, vertical_alignment="bottom")
 
-columns[0].write("**My App Name**")
+columns[0].write("**eCFR Analyzer**")
 
 for col, page in zip(columns[1:], pages):
     col.page_link(page, icon=page.icon)
