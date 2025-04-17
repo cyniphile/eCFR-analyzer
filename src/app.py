@@ -7,7 +7,17 @@ st.set_page_config(page_title="Title Changes Analyzer", layout="wide")
 
 
 def page3():
-    st.write("This is the home page")
+    st.write("# eCFR Analyzer")
+    st.markdown(
+        """
+        [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/cyniphile/eCFR-analyzer)
+
+        # TODO Items:
+        - Make timeline feature more useful by linking to Agency instead of Title. 
+		- Dynamic linking to sections of regulations by agency/sub-agency in the treemap. 
+		- Clicking timeline-of-changes plot interactively updates table below
+        """
+    )
 
 
 pages = [

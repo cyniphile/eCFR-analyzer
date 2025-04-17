@@ -132,13 +132,3 @@ def page1():
 
     # Display the treemap
     st.plotly_chart(fig, use_container_width=True)
-
-    # Add a footer with additional information
-    st.markdown(
-        """
-    ---
-    ### About This Visualization
-    This treemap visualizes the word count across different agencies. The size and color intensity of 
-    each box represent the total word count. Parent organizations contain their child agencies.
-    """
-    )

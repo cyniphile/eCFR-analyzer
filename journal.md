@@ -1,16 +1,3 @@
-## Next steps
-<!-- Read these -->
-<!-- - https://www.ecfr.gov/reader-aids/using-ecfr/reading-ecfr-content -->
-<!-- - https://www.ecfr.gov/reader-aids/using-ecfr/ecfr-changes-through-time -->
-- how does title correlate to agency?
-  - https://www.ecfr.gov/developers/documentation/api/v1#/Admin%20Service/get_api_admin_v1_agencies_json
-- still need to figure out changes api
-  - understand results better: https://www.ecfr.gov/developers/documentation/api/v1#/Versioner%20Service/get_api_versioner_v1_versions_title__title__json
-  - https://github.com/usgpo/bulk-data/blob/main/ECFR-XML-User-Guide.md
-- What to do for frontend + hosting? Panel would make most sense since I've used it.
-	- using streamlit + just commiting smaller files to the repo. Simplest and easiest
-	- cleanup homepage
-
 # Day 4
 - Quick retro:
 	- Good to focus on mvp and getting only essentials done, but could have done that more
@@ -18,6 +5,7 @@
 	- Big TODO would be to:
 		- make timeline feature more useful by doing it by Agency. Scratchpad notebook began this, but ultimately need to do more work to handle deleted sections, which would take too much time.
 		- Allow dynamic linking to sections of regulations by agency/sub-agency in the treeplot. Again, out of time for now.
+		- Allow dynamic graph selecting for changes data. Streamlit-plotly-events simply wasn't working well OOTB (makes sense, unmaintained currently)
 
 
 # Day 3
