@@ -1,10 +1,9 @@
 import requests
 import os
 import time
-from utils import get_titles_list, get_project_root, BASE_URL
+from utils import get_titles_list, BASE_URL, data_dir
 
-git_root = get_project_root()
-RAW_TITLES_PATH = data_dir = git_root / "data/raw_title_xml"
+RAW_TITLES_PATH = data_dir / "raw_title_xml"
 
 # TODO: refactor as function
 if __name__ == "__main__":

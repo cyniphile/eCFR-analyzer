@@ -1,8 +1,7 @@
 import requests
-from utils import get_titles_list, get_project_root, BASE_URL
+from utils import get_titles_list, data_dir, BASE_URL
 
-root = get_project_root()
-RAW_VERSIONS_PATH = root / "data" / "title_changes"
+RAW_VERSIONS_PATH = data_dir / "title_changes"
 
 
 if __name__ == "__main__":

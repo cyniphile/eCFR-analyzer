@@ -2,10 +2,13 @@ import streamlit as st
 from datetime import datetime
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import json
 import os
 from scripts.download_versions import RAW_VERSIONS_PATH
+
+# TODO: add filters for removals and "substantive"
+# TODO: map to agency
+
 
 # TODO: seems like changes before this are not properly recorded in the eCFR
 MIN_DATE = datetime(2017, 1, 3)

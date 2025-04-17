@@ -4,6 +4,7 @@ import os
 
 BASE_URL = "https://www.ecfr.gov/"
 TITLES_LIST_URL = f"{BASE_URL}/api/versioner/v1/titles"
+AGENCIES_LIST_URL = f"{BASE_URL}/api/admin/v1/agencies.json"
 
 
 def get_titles_list(url=TITLES_LIST_URL):
@@ -18,3 +19,6 @@ def get_titles_list(url=TITLES_LIST_URL):
 
 def get_project_root() -> Path:
     return Path(os.popen("git rev-parse --show-toplevel").read().strip())
+
+
+data_dir = get_project_root() / "data/"

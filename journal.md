@@ -16,9 +16,18 @@
 - Awesome goal would be to visualize partisan drift over time by section, but that requires diffs which might be a little tricky
 - Again refocus on an MVP: word counts by agency, and historical changes over time, served in an app
 
+Questions/ideas:
+- how to easily/efficiently get diffs?
+- Amendment vs issue date?
+- See which titles have most activity per size of current doc
+	- substantive
+	- removals
+	- Could use vectorized names to summarize where most of the changes are happening in a given period. 
+
 
 
 ## Day 2
+Total time: 2 hours
 - Goal is to finish word counting + figure out changes api. Stretch goal is to design/build local version of website, with plan for deployment.
 - Want to finish this up by EOD Wednesday (day 3) (would focus more here but have a lot on my plate at work + another ongoing interview process)
 - Big picture: thing about this project from a DOGE perspective. Want to increase govt efficiency so:
@@ -28,6 +37,7 @@
 - Spent .5 hours over lunch to dig into the historical changes. Get a list of changes for a given title is pretty easy, but TODO: should think of a clear way of showing changes over time, and how to visualize by which sections/parts/etc are changing. Could imagine something like a heatmap (similar to disk utility) where you can sort and filter sections by changes over time, see a timeseries, etc. 
 
 ## Day 1
+Total time: 2.5 hours
 - As I was falling asleep thought of some things:
 	- would be cool to vectorize at least one of the titles, and display an interactive UMAP of the sections and subsections, color coded by chapter
 		- this would allow for a quick overview of the structure of the CFR; a more visual/intuitive way to explore the CFR
