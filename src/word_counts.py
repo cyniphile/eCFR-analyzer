@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
-from utils import data_dir
+from utils import app_data_dir
 
 
 def page1():
@@ -32,7 +32,7 @@ def page1():
         unsafe_allow_html=True,
     )
 
-    df = pd.read_csv(data_dir / "agencies_word_count.csv")
+    df = pd.read_csv(app_data_dir / "agencies_word_count.csv")
 
     # Function to prepare the data for Plotly treemap
     def prepare_treemap_data(df):

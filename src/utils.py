@@ -22,3 +22,4 @@ def get_project_root() -> Path:
 
 
 data_dir = get_project_root() / "data/"
+app_data_dir = get_project_root() / "app_data/"
