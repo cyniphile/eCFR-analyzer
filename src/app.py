@@ -1,4 +1,9 @@
+# TODO: selection autofilters data table
+# https://github.com/ethanhe42/streamlit-plotly-events
+# table can't get too big
+# table links to cfr by paragraph: https://www.ecfr.gov/current/title-15/section-772.1
 import streamlit as st
+from datetime import datetime
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -15,6 +20,10 @@ st.markdown("Select options to visualize changes in title content over time.")
 st.sidebar.header("📋 Controls")
 
 
+# TODO: seems like changes before this are not properly recorded in the eCFR
+MIN_DATE = datetime(2017, 1, 3)
+
+
 def find_title_files():
     title_files = []
     for i in range(1, 50):
@@ -22,6 +31,40 @@ def find_title_files():
         if os.path.exists(file_path):
             title_files.append(i)
     return title_files
+
+
+REMOVED_BASE_URL_TEMPLATE = (
+    "https://www.ecfr.gov/on/current/title-{title_number}/section-{section_number}"
+)
+
+
+def create_link(row):
+    subpart = row["subpart"]
+    title = row["title"].split("Title ")[1]
+
+    date = row["date"]
+    removed = row["removed"]
+    if removed:
+        return REMOVED_BASE_URL_TEMPLATE.format(
+            title_number=title,
+            section_number=row["identifier"],
+        )
+    if subpart:
+        return "https://www.ecfr.gov/compare/{date}/to/2024-05-14/title-{title}/part-{part}/subpart-{subpart}/section-{section}".format(
+            title=title,
+            part=row["part"],
+            date=date,
+            subpart=subpart,
+            section=row["identifier"],
+        )
+    else:
+        return "https://www.ecfr.gov/compare/{date}/to/2024-05-14/title-{title}/part-{part}/section-{section}".format(
+            removed=removed,
+            title=title,
+            date=date,
+            part=row["part"],
+            section=row["identifier"],
+        )
 
 
 @st.cache_data
@@ -32,7 +75,15 @@ def load_data(title_number):
 
     df = pd.DataFrame(data["content_versions"])
     df["issue_date"] = pd.to_datetime(df["issue_date"])
+    df["filter_date"] = pd.to_datetime(df["date"])
+    df = df[df["filter_date"] >= MIN_DATE]
+    df.drop(columns=["filter_date"], inplace=True)
     df["title"] = f"Title {title_number}"
+    df["link"] = df.apply(
+        create_link,
+        axis=1,
+    )
+
     return df
 
 
@@ -46,8 +97,11 @@ else:
         [f"Title {num}" for num in title_numbers],
         default=[f"Title {title_numbers[0]}"],
     )
-
-    all_dfs = pd.concat([load_data(int(title.split(" ")[1])) for title in selected_titles])
+    dfs = [load_data(int(title.split(" ")[1])) for title in selected_titles]
+    if len(dfs):
+        all_dfs = pd.concat(dfs)
+    else:
+        all_dfs = pd.DataFrame()
 
     if not all_dfs.empty:
         min_date = all_dfs["issue_date"].min().date()
@@ -57,10 +111,15 @@ else:
             "Select Date Range", value=(min_date, max_date), min_value=min_date, max_value=max_date
         )
 
-        if isinstance(date_range, tuple):
-            start_date, end_date = date_range
-        else:
-            start_date = end_date = date_range
+        try:
+            if isinstance(date_range, tuple):
+                start_date, end_date = date_range
+            else:
+                start_date = end_date = date_range
+        except ValueError:
+            st.error("Invalid date range selected.")
+            start_date = min_date
+            end_date = max_date
 
         filtered_df = all_dfs[
             (all_dfs["issue_date"].dt.date >= start_date)
@@ -86,7 +145,7 @@ else:
             y="Changes",
             color="title",
             markers=True,
-            title=f"Changes Over Time Grouped by {selected_aggregation}s",
+            title=f"Changes Over Time Grouped by {selected_aggregation}s. In the table below, click on the link to see the changes.",
         )
 
         fig.update_layout(
@@ -101,15 +160,6 @@ else:
         # Hover functionality
         hover_data = st.empty()
 
-        def update_hover(trace, points, state):
-            if points.point_inds:
-                period = points.xs[0]
-                title = trace.name
-                details = filtered_df[
-                    (filtered_df["Period"] == period) & (filtered_df["title"] == title)
-                ]
-                hover_data.dataframe(details[["section", "issue_date"]].reset_index(drop=True))
-
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Total Changes", len(filtered_df))
@@ -121,7 +171,12 @@ else:
         with col3:
             st.metric("Date Range", f"{start_date} to {end_date}")
 
-        st.dataframe(filtered_df)
+        st.dataframe(
+            filtered_df,
+            column_config={
+                "link": st.column_config.LinkColumn(),
+            },
+        )
 
     else:
         st.warning("No data available for the selected range or titles.")
