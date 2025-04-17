@@ -4,8 +4,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import json
 import os
-from datetime import datetime
-from pathlib import Path
 from download_versions import RAW_VERSIONS_PATH
 
 st.set_page_config(page_title="Title Changes Analyzer", layout="wide")
@@ -17,134 +15,117 @@ st.markdown("Select options to visualize changes in title content over time.")
 st.sidebar.header("📋 Controls")
 
 
-# Find all title JSON files
 def find_title_files():
-    """Find all title_X_changes.json files in the specified directory"""
     title_files = []
-    # Assuming files are in the current directory or a specific path
-    # Update RAW_VERSIONS_PATH to your actual path if needed
-
-    for i in range(1, 50):  # Up to 50 titles as in your original code
+    for i in range(1, 50):
         file_path = RAW_VERSIONS_PATH / f"title_{i}_changes.json"
         if os.path.exists(file_path):
-            title_files.append((i, f"Title {i}"))
-
+            title_files.append(i)
     return title_files
 
 
-# Function to load and process data
 @st.cache_data
 def load_data(title_number):
-    """Load and process data for a specific title number"""
     file_path = RAW_VERSIONS_PATH / f"title_{title_number}_changes.json"
+    with open(file_path, "r") as file:
+        data = json.load(file)
 
-    try:
-        with open(file_path, "r") as file:
-            data = json.load(file)
-
-        # Convert to DataFrame
-        df = pd.DataFrame(data["content_versions"])
-
-        # Convert 'issue_date' to datetime
-        df["issue_date"] = pd.to_datetime(df["issue_date"])
-
-        return df
-    except Exception as e:
-        st.error(f"Error loading data: {e}")
-        return None
+    df = pd.DataFrame(data["content_versions"])
+    df["issue_date"] = pd.to_datetime(df["issue_date"])
+    df["title"] = f"Title {title_number}"
+    return df
 
 
-# Get available title files
-title_files = find_title_files()
+title_numbers = find_title_files()
 
-if not title_files:
-    st.warning("No title files found. Please check the file path and naming convention.")
+if not title_numbers:
+    st.warning("No title files found.")
 else:
-    # Title selection
-    title_options = [f"Title {i}" for i, _ in title_files]
-    selected_title_display = st.sidebar.selectbox("Select Title", title_options)
-    selected_title_number = int(selected_title_display.split(" ")[1])
+    selected_titles = st.sidebar.multiselect(
+        "Select Titles",
+        [f"Title {num}" for num in title_numbers],
+        default=[f"Title {title_numbers[0]}"],
+    )
 
-    # Load data for selected title
-    df = load_data(selected_title_number)
+    all_dfs = pd.concat([load_data(int(title.split(" ")[1])) for title in selected_titles])
 
-    if df is not None and not df.empty:
-        # Date range selection
-        min_date = df["issue_date"].min().date()
-        max_date = df["issue_date"].max().date()
+    if not all_dfs.empty:
+        min_date = all_dfs["issue_date"].min().date()
+        max_date = all_dfs["issue_date"].max().date()
 
         date_range = st.sidebar.date_input(
             "Select Date Range", value=(min_date, max_date), min_value=min_date, max_value=max_date
         )
 
-        # Handle single date selection
-        if isinstance(date_range, tuple) and len(date_range) == 2:
+        if isinstance(date_range, tuple):
             start_date, end_date = date_range
         else:
             start_date = end_date = date_range
 
-        # Filter data by date range
-        filtered_df = df[
-            (df["issue_date"].dt.date >= start_date) & (df["issue_date"].dt.date <= end_date)
+        filtered_df = all_dfs[
+            (all_dfs["issue_date"].dt.date >= start_date)
+            & (all_dfs["issue_date"].dt.date <= end_date)
         ]
 
-        # Aggregation options
         aggregation_options = ["Day", "Week", "Month", "Quarter", "Year"]
         selected_aggregation = st.sidebar.selectbox("Select Aggregation", aggregation_options)
 
-        # Map selected aggregation to pandas period strings
         aggregation_map = {"Day": "D", "Week": "W", "Month": "M", "Quarter": "Q", "Year": "Y"}
 
-        if not filtered_df.empty:
-            # Group by selected aggregation and count changes
-            period_str = aggregation_map[selected_aggregation]
-            changes_over_time = filtered_df.groupby(
-                filtered_df["issue_date"].dt.to_period(period_str)
-            ).size()
+        period_str = aggregation_map[selected_aggregation]
 
-            # Convert to DataFrame for plotting
-            changes_df = changes_over_time.reset_index()
-            changes_df.columns = ["Period", "Changes"]
+        filtered_df["Period"] = filtered_df["issue_date"].dt.to_period(period_str).astype(str)
 
-            # Convert period to string for Plotly
-            changes_df["Period"] = changes_df["Period"].astype(str)
+        changes_df = filtered_df.groupby(["Period", "title"]).size().reset_index(name="Changes")
 
-            # Create plot
-            st.subheader(f"Changes Over Time - {selected_title_display}")
+        st.subheader(f"Changes Over Time")
 
-            fig = px.line(
-                changes_df,
-                x="Period",
-                y="Changes",
-                markers=True,
-                title=f"Changes Over Time Grouped by {selected_aggregation}s",
+        fig = px.line(
+            changes_df,
+            x="Period",
+            y="Changes",
+            color="title",
+            markers=True,
+            title=f"Changes Over Time Grouped by {selected_aggregation}s",
+        )
+
+        fig.update_layout(
+            xaxis_title=selected_aggregation,
+            yaxis_title="Number of Changes",
+            hovermode="closest",
+            height=600,
+        )
+
+        selected_point = st.plotly_chart(fig, use_container_width=True)
+
+        # Hover functionality
+        hover_data = st.empty()
+
+        def update_hover(trace, points, state):
+            if points.point_inds:
+                period = points.xs[0]
+                title = trace.name
+                details = filtered_df[
+                    (filtered_df["Period"] == period) & (filtered_df["title"] == title)
+                ]
+                hover_data.dataframe(details[["section", "issue_date"]].reset_index(drop=True))
+
+        for trace in fig.data:
+            trace
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Changes", len(filtered_df))
+        with col2:
+            st.metric(
+                f"Average Changes per {selected_aggregation}",
+                round(changes_df["Changes"].mean(), 2),
             )
+        with col3:
+            st.metric("Date Range", f"{start_date} to {end_date}")
 
-            fig.update_layout(
-                xaxis_title=selected_aggregation,
-                yaxis_title="Number of Changes",
-                hovermode="x unified",
-                height=600,
-            )
+        if st.checkbox("Show Raw Data"):
+            st.dataframe(filtered_df)
 
-            st.plotly_chart(fig, use_container_width=True)
-
-            # Display data statistics
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Total Changes", len(filtered_df))
-            with col2:
-                st.metric(
-                    f"Average Changes per {selected_aggregation}",
-                    round(changes_df["Changes"].mean(), 2),
-                )
-            with col3:
-                st.metric("Date Range", f"{start_date} to {end_date}")
-
-            # Display raw data if requested
-            if st.checkbox("Show Raw Data"):
-                st.dataframe(filtered_df)
-        else:
-            st.warning("No data available for the selected date range.")
     else:
-        st.error(f"Failed to load data for {selected_title_display} or the data is empty.")
+        st.warning("No data available for the selected range or titles.")
