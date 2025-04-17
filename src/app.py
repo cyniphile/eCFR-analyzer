@@ -1,5 +1,5 @@
 import streamlit as st
-from changes import page2
+from title_changes import page2
 
 
 st.set_page_config(page_title="Title Changes Analyzer", layout="wide")
