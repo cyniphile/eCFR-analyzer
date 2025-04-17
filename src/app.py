@@ -1,182 +1,40 @@
-# TODO: selection autofilters data table
-# https://github.com/ethanhe42/streamlit-plotly-events
-# table can't get too big
-# table links to cfr by paragraph: https://www.ecfr.gov/current/title-15/section-772.1
 import streamlit as st
-from datetime import datetime
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import json
-import os
-from download_versions import RAW_VERSIONS_PATH
+from changes import page2
+
 
 st.set_page_config(page_title="Title Changes Analyzer", layout="wide")
 
-st.title("📊 Title Changes Analyzer")
-st.markdown("Select options to visualize changes in title content over time.")
 
-# Sidebar for controls
-st.sidebar.header("📋 Controls")
+def page1():
+    st.write("This is the home page")
 
 
-# TODO: seems like changes before this are not properly recorded in the eCFR
-MIN_DATE = datetime(2017, 1, 3)
+def page3():
+    st.write("This is the settings page")
 
 
-def find_title_files():
-    title_files = []
-    for i in range(1, 50):
-        file_path = RAW_VERSIONS_PATH / f"title_{i}_changes.json"
-        if os.path.exists(file_path):
-            title_files.append(i)
-    return title_files
+def page4():
+    st.write("This is the map page")
 
 
-REMOVED_BASE_URL_TEMPLATE = (
-    "https://www.ecfr.gov/on/current/title-{title_number}/section-{section_number}"
-)
+pages = [
+    st.Page(page1, icon=":material/home:", title="Home"),
+    st.Page(page2, icon=":material/filter:", title="Filter"),
+    st.Page(page3, icon=":material/settings:", title="Settings"),
+    st.Page(page4, icon=":material/map:", title="Map"),
+]
+current_page = st.navigation(pages=pages, position="hidden")
 
 
-def create_link(row):
-    subpart = row["subpart"]
-    title = row["title"].split("Title ")[1]
+num_cols = max(len(pages) + 1, 8)
 
-    date = row["date"]
-    removed = row["removed"]
-    if removed:
-        return REMOVED_BASE_URL_TEMPLATE.format(
-            title_number=title,
-            section_number=row["identifier"],
-        )
-    if subpart:
-        return "https://www.ecfr.gov/compare/{date}/to/2024-05-14/title-{title}/part-{part}/subpart-{subpart}/section-{section}".format(
-            title=title,
-            part=row["part"],
-            date=date,
-            subpart=subpart,
-            section=row["identifier"],
-        )
-    else:
-        return "https://www.ecfr.gov/compare/{date}/to/2024-05-14/title-{title}/part-{part}/section-{section}".format(
-            removed=removed,
-            title=title,
-            date=date,
-            part=row["part"],
-            section=row["identifier"],
-        )
+columns = st.columns(num_cols, vertical_alignment="bottom")
 
+columns[0].write("**My App Name**")
 
-@st.cache_data
-def load_data(title_number):
-    file_path = RAW_VERSIONS_PATH / f"title_{title_number}_changes.json"
-    with open(file_path, "r") as file:
-        data = json.load(file)
+for col, page in zip(columns[1:], pages):
+    col.page_link(page, icon=page.icon)
 
-    df = pd.DataFrame(data["content_versions"])
-    df["issue_date"] = pd.to_datetime(df["issue_date"])
-    df["filter_date"] = pd.to_datetime(df["date"])
-    df = df[df["filter_date"] >= MIN_DATE]
-    df.drop(columns=["filter_date"], inplace=True)
-    df["title"] = f"Title {title_number}"
-    df["link"] = df.apply(
-        create_link,
-        axis=1,
-    )
+st.title(f"{current_page.icon} {current_page.title}")
 
-    return df
-
-
-title_numbers = find_title_files()
-
-if not title_numbers:
-    st.warning("No title files found.")
-else:
-    selected_titles = st.sidebar.multiselect(
-        "Select Titles",
-        [f"Title {num}" for num in title_numbers],
-        default=[f"Title {title_numbers[0]}"],
-    )
-    dfs = [load_data(int(title.split(" ")[1])) for title in selected_titles]
-    if len(dfs):
-        all_dfs = pd.concat(dfs)
-    else:
-        all_dfs = pd.DataFrame()
-
-    if not all_dfs.empty:
-        min_date = all_dfs["issue_date"].min().date()
-        max_date = all_dfs["issue_date"].max().date()
-
-        date_range = st.sidebar.date_input(
-            "Select Date Range", value=(min_date, max_date), min_value=min_date, max_value=max_date
-        )
-
-        try:
-            if isinstance(date_range, tuple):
-                start_date, end_date = date_range
-            else:
-                start_date = end_date = date_range
-        except ValueError:
-            st.error("Invalid date range selected.")
-            start_date = min_date
-            end_date = max_date
-
-        filtered_df = all_dfs[
-            (all_dfs["issue_date"].dt.date >= start_date)
-            & (all_dfs["issue_date"].dt.date <= end_date)
-        ]
-
-        aggregation_options = ["Day", "Week", "Month", "Year"]
-        selected_aggregation = st.sidebar.selectbox("Select Aggregation", aggregation_options)
-
-        aggregation_map = {"Day": "D", "Week": "W", "Month": "M", "Quarter": "Q", "Year": "Y"}
-
-        period_str = aggregation_map[selected_aggregation]
-
-        filtered_df["Period"] = filtered_df["issue_date"].dt.to_period(period_str).astype(str)
-
-        changes_df = filtered_df.groupby(["Period", "title"]).size().reset_index(name="Changes")
-
-        st.subheader(f"Changes Over Time")
-
-        fig = px.line(
-            changes_df,
-            x="Period",
-            y="Changes",
-            color="title",
-            markers=True,
-            title=f"Changes Over Time Grouped by {selected_aggregation}s. In the table below, click on the link to see the changes.",
-        )
-
-        fig.update_layout(
-            xaxis_title=selected_aggregation,
-            yaxis_title="Number of Changes",
-            hovermode="closest",
-            height=600,
-        )
-
-        selected_point = st.plotly_chart(fig, use_container_width=True)
-
-        # Hover functionality
-        hover_data = st.empty()
-
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Total Changes", len(filtered_df))
-        with col2:
-            st.metric(
-                f"Average Changes per {selected_aggregation}",
-                round(changes_df["Changes"].mean(), 2),
-            )
-        with col3:
-            st.metric("Date Range", f"{start_date} to {end_date}")
-
-        st.dataframe(
-            filtered_df,
-            column_config={
-                "link": st.column_config.LinkColumn(),
-            },
-        )
-
-    else:
-        st.warning("No data available for the selected range or titles.")
+current_page.run()
