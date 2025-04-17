@@ -67,7 +67,7 @@ else:
             & (all_dfs["issue_date"].dt.date <= end_date)
         ]
 
-        aggregation_options = ["Day", "Week", "Month", "Quarter", "Year"]
+        aggregation_options = ["Day", "Week", "Month", "Year"]
         selected_aggregation = st.sidebar.selectbox("Select Aggregation", aggregation_options)
 
         aggregation_map = {"Day": "D", "Week": "W", "Month": "M", "Quarter": "Q", "Year": "Y"}
@@ -109,7 +109,6 @@ else:
                     (filtered_df["Period"] == period) & (filtered_df["title"] == title)
                 ]
                 hover_data.dataframe(details[["section", "issue_date"]].reset_index(drop=True))
-
 
         col1, col2, col3 = st.columns(3)
         with col1:
