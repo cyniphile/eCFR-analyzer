@@ -6,6 +6,7 @@ import json
 import os
 from scripts.download_versions import RAW_VERSIONS_PATH
 from st_files_connection import FilesConnection
+from utils import get_or_load_titles_list
 
 # TODO: add filters for removals and "substantive"
 # TODO: map to agency
@@ -14,6 +15,9 @@ MIN_DATE = datetime(2017, 1, 3)
 
 
 def page2():
+    titles_list = get_or_load_titles_list()
+    title_number_name_map = {tt["number"]: tt["name"] for tt in titles_list["titles"]}
+
     conn = st.connection("s3", type=FilesConnection)
     st.markdown(
         "Visualize changes made to the various Titles in the eCFR over time. In the table below, click on the `Link` column to see the actual changes to the legal text."
@@ -99,10 +103,10 @@ def page2():
     else:
         selected_titles = st.sidebar.multiselect(
             "Select Titles",
-            [f"Title {num}" for num in title_numbers],
-            default=[f"Title {title_numbers[0]}"],
+            [f"Title {num}: {title_number_name_map[num]}" for num in title_numbers],
+            default=[f"Title {title_numbers[0]}: {title_number_name_map[title_numbers[0]]}"],
         )
-        dfs = [load_data(int(title.split(" ")[1])) for title in selected_titles]
+        dfs = [load_data(int(title.split(" ")[1].split(":")[0])) for title in selected_titles]
         if len(dfs):
             all_dfs = pd.concat(dfs)
         else:
