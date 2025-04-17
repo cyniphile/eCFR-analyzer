@@ -24,7 +24,7 @@ def get_or_load_titles_list():
     """
     # Check if the file exists
     if os.path.exists(app_data_dir / "titles.json"):
-        with open(data_dir / "titles.json", "r") as f:
+        with open(app_data_dir / "titles.json", "r") as f:
             return json.load(f)
     else:
         # If not, fetch it from the API and save it
