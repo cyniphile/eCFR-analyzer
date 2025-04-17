@@ -22,12 +22,13 @@ def page2():
     # Sidebar for controls
     st.sidebar.header("📋 Controls")
 
-    def find_title_files():
+    def list_title_files():
         title_files = []
         for i in range(1, 50):
-            file_path = RAW_VERSIONS_PATH / f"title_{i}_changes.json"
-            if os.path.exists(file_path):
-                title_files.append(i)
+            # TODO: check if files are in S3, for now assume they are
+            # file_path = S3_PATH.format(title_number=i)
+            # if os.path.exists(file_path):
+            title_files.append(i)
         return title_files
 
     REMOVED_BASE_URL_TEMPLATE = (
@@ -91,7 +92,7 @@ def page2():
 
         return df
 
-    title_numbers = find_title_files()
+    title_numbers = list_title_files()
 
     if not title_numbers:
         st.warning("No title files found.")
