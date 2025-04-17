@@ -83,8 +83,10 @@ def page1():
         return pd.DataFrame(treemap_data)
 
     # Title and description
-    st.title("Agencies Word Count Treemap")
-    st.write("Organizations sized by word count. Click on an organization to drill down.")
+    st.title("Agencies Word Count")
+    st.write(
+        "Federal agencies sized by word count of their pertinent codes in the [eCFR](https://www.ecfr.gov/). Click on an organization to drill down to its sub-agencies."
+    )
 
     # Prepare the treemap data
     treemap_df = prepare_treemap_data(df)

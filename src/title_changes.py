@@ -16,7 +16,7 @@ MIN_DATE = datetime(2017, 1, 3)
 def page2():
     conn = st.connection("s3", type=FilesConnection)
     st.markdown(
-        "Select options to visualize changes in title content over time. In the table below, click on the Links to see the actual changes to the text."
+        "Visualize changes made to the various Titles in the eCFR over time. In the table below, click on the `Link` column to see the actual changes to the legal text."
     )
 
     # Sidebar for controls

@@ -12,6 +12,8 @@ def page3():
         """
         [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/cyniphile/eCFR-analyzer)
 
+        Data analysis and visualization of the [eCFR](https://www.ecfr.gov/) (Electronic Code of Federal Regulations) as of 5/14/25. The eCFR is an up-to-date, unofficial version of the Code of Federal Regulations (CFR), which is the codification of the general and permanent rules published in the Federal Register by the executive departments and agencies of the U.S. federal government.
+
         """
     )
 
