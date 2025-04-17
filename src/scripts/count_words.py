@@ -4,8 +4,14 @@ import re
 from utils import AGENCIES_LIST_URL
 import json
 import pandas as pd
-
 from utils import data_dir
+
+XML_DOCUMENT_SCHEMA_MAP = {
+    "chapter": {"element": "DIV3", "type": "CHAPTER"},
+    "part": {"element": "DIV5", "type": "PART"},
+    "subchapter": {"element": "DIV4", "type": "SUBCHAP"},
+    "subtitle": {"element": "DIV2", "type": "SUBTITLE"},
+}
 
 
 def word_count_sans_xml(xml_string):
@@ -60,7 +66,7 @@ def get_word_count_for_agency(agency_references_json):
             root = element
 
         # Convert the element back to string
-        s = etree.tostring(root, encoding="unicode", pretty_print=True)
+        s = etree.tostring(root, encoding="unicode", pretty_print=True)  # type: ignore
         word_count += word_count_sans_xml(s)
     return word_count
 
@@ -88,12 +94,6 @@ if __name__ == "__main__":
     #         for k, v in d.items():
     #             types.add(k)
 
-    XML_DOCUMENT_SCHEMA_MAP = {
-        "chapter": {"element": "DIV3", "type": "CHAPTER"},
-        "part": {"element": "DIV5", "type": "PART"},
-        "subchapter": {"element": "DIV4", "type": "SUBCHAP"},
-        "subtitle": {"element": "DIV2", "type": "SUBTITLE"},
-    }
     # Assuming this is pretty well formed data. Two agencies don't point to the same data, there is no orphaned data, etc.
     child_dfs = []
     for i, row in df.iterrows():

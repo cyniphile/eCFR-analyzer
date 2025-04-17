@@ -5,16 +5,16 @@ import plotly.express as px
 import json
 import os
 from scripts.download_versions import RAW_VERSIONS_PATH
+from st_files_connection import FilesConnection
 
 # TODO: add filters for removals and "substantive"
 # TODO: map to agency
-
-
 # TODO: seems like changes before this are not properly recorded in the eCFR
 MIN_DATE = datetime(2017, 1, 3)
 
 
 def page2():
+    conn = st.connection("s3", type=FilesConnection)
     st.markdown(
         "Select options to visualize changes in title content over time. In the table below, click on the Links to see the actual changes to the text."
     )
@@ -67,9 +67,16 @@ def page2():
 
     @st.cache_data
     def load_data(title_number):
-        file_path = RAW_VERSIONS_PATH / f"title_{title_number}_changes.json"
-        with open(file_path, "r") as file:
-            data = json.load(file)
+        data = conn.read(
+            f"luke-ecfr-analyzer/title_changes/title_{title_number}_changes.json",
+            input_format="json",
+            ttl=600,
+        )
+
+        # TODO: use env vars to use local files in dev
+        # file_path = RAW_VERSIONS_PATH / f"title_{title_number}_changes.json"
+        # with open(file_path, "r") as file:
+        #     data = json.load(file)
 
         df = pd.DataFrame(data["content_versions"])
         df["issue_date"] = pd.to_datetime(df["issue_date"])

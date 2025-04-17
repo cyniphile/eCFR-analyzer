@@ -8,8 +8,20 @@
   - understand results better: https://www.ecfr.gov/developers/documentation/api/v1#/Versioner%20Service/get_api_versioner_v1_versions_title__title__json
   - https://github.com/usgpo/bulk-data/blob/main/ECFR-XML-User-Guide.md
 - What to do for frontend + hosting? Panel would make most sense since I've used it.
+	- using streamlit + just commiting smaller files to the repo. Simplest and easiest
+	- cleanup homepage
+
+# Day 4
+- Quick retro:
+	- Good to focus on mvp and getting only essentials done, but could have done that more
+	- Goal to spend about "<1 day" so <16 hrs have 3 hrs left
+	- Big TODO would be to:
+		- make timeline feature more useful by doing it by Agency. Scratchpad notebook began this, but ultimately need to do more work to handle deleted sections, which would take too much time.
+		- Allow dynamic linking to sections of regulations by agency/sub-agency in the treeplot. Again, out of time for now.
+
 
 # Day 3
+- Spend about 9 hours today, will wrap up final details tomorrow morning.
 - Way too busy with interviews and main work to do much, but today have more time
   - Goal is to finish word counting + figure out changes api. Stretch goal is to design/build local version of website, with plan for deployment.
 - Some text analysis would be nice to do, and I think looking at historical changes will be slightly easier as a POC than looking at all text
