@@ -110,8 +110,6 @@ else:
                 ]
                 hover_data.dataframe(details[["section", "issue_date"]].reset_index(drop=True))
 
-        for trace in fig.data:
-            trace
 
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -124,8 +122,7 @@ else:
         with col3:
             st.metric("Date Range", f"{start_date} to {end_date}")
 
-        if st.checkbox("Show Raw Data"):
-            st.dataframe(filtered_df)
+        st.dataframe(filtered_df)
 
     else:
         st.warning("No data available for the selected range or titles.")
