@@ -12,10 +12,16 @@ def page3():
         """
         [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/cyniphile/eCFR-analyzer)
 
-        # TODO Items:
-        - Make timeline feature more useful by linking to Agency instead of Title. 
-		- Dynamic linking to sections of regulations by agency/sub-agency in the treemap. 
-		- Clicking timeline-of-changes plot interactively updates table below
+        """
+    )
+
+    st.markdown(
+        """
+### App TODO Items:
+
+- Make timeline feature more useful by linking to Agency instead of Title. 
+- Clicking timeline-of-changes plot interactively updates table below
+- Dynamic linking to sections of regulations by agency/sub-agency in the treemap. 
         """
     )
 
