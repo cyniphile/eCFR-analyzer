@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import json
 import os
-from scripts.download_versions import RAW_VERSIONS_PATH
+from download_versions import RAW_VERSIONS_PATH
 
 # TODO: seems like changes before this are not properly recorded in the eCFR
 MIN_DATE = datetime(2017, 1, 3)
